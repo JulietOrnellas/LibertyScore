@@ -1,12 +1,11 @@
 import tweepy
-import time  ## Allows me to pause the bot so it doesn't run constnantly
-import os   ## Helps me work with environment variaples - api keys, etc...
-#import requests  # lets me make http requests to get the liberty score page
-#from bs4 import BeautifulSoup ## used to scrape infrom from webpage
+import time  
+import os   
+
 
 from dotenv import load_dotenv
 
-## Import my own wrapper to handle either real or mock testing
+## Import wrapper to handle either real or mock testing
 from twitter_api_wrapper import get_mentions, reply_to_tweet
 load_dotenv()
 
@@ -33,30 +32,26 @@ LAST_SEEN_FILE = 'last_seen.txt'
 ## to the same tweet over and over
 # Twitter mentions are returned in order from newest to oldest, so we use this 
 ## to track the most recent one we handled.
-
-
 def get_last_seen_id():
     try:
         with open(LAST_SEEN_FILE, 'r') as f:
             return int(f.read().strip())  ## return the id as an integer
     except:
-        return None    ## if file doesn't exit yet, we haven't seen any tweets
+        return None    
     
     
 ## This function write the ID of the most recent tweet we've responded to
-## We update this everyt time we reply to a new mention   
+## We update this every time we reply to a new mention   
 def set_last_seen_id(tweet_id):
     with open(LAST_SEEN_FILE, 'w') as f:
         f.write(str(tweet_id))
         
 # Extract name by removing bot handle
-## takes full tweet text and removes the bot handle
 def extract_name(tweet_text, bot_handle="@LibertyLookup"):
     return tweet_text.replace(bot_handle,"").strip().lower()
     
 ## This function looks up the liberty score from the website.  It takes the name
 ## and tries to load the relevant page
-## Then it scrapes the page to find the score (it's stored in a <div> with class="score-card-score")
 # Liberty Score parser
 def get_liberty_score(name):
     ##  Converts politicians name into a url to look up
